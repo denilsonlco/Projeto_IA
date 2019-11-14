@@ -1,0 +1,75 @@
+#movimentacao_entre_as_posicões_da_matriz
+
+%mover_para_direita
+movimenta([Px,Py],[Px2,Py2],Parede,Barril,Escada) :- not(pertence([Px,Py],Parede)), not(pertence([Px,Py],Barril)), not(pertence([Px,Py],Escada)), Px<10,Px2 is Px+1,Py2 is Py.
+	
+%mover_para_esquerda
+movimenta([Px,Py],[Px2,Py2],Parede,Escada,Barril) :- not(pertence([Px,Py],Parede)), not(pertence([Px,Py],Barril)), not(pertence([Px,Py],Escada)), Px>1,Px2 is Px-1,Py2 is Py.
+
+%subir_escada
+movimenta([Px,Py],[Px2,Py2],_,Escada, Barril) :- pertence([Px,Py],Escada),Py<5, Py2 is Py+1,Px2 is Px.
+
+%descer_escada
+movimenta([Px,Py],[Px2,Py2],_,Escada, Barril) :- pertence([Px,Py],Escada),Py>1, Py2 is Py-1,Px2 is Px.
+
+%mover_para_direita_sem_pular_barris_consecutivos
+movimenta([Px,Py],[Px2,Py2],_,Escada,Barril) :- concatena(
+
+
+
+#metodos_para_manipulação_de_listas
+
+%verifica_se_um_elemento_pertence_a_lista
+pertence(Elem,[Elem|_]).
+pertence(Elem,[_|Cauda]) :- pertence(Elem,Cauda).
+
+%remove_elemento
+retirar_elemento(Elem,[Elem|Cauda],Cauda).
+retirar_elemento(Elem,[Cabeça|Cauda],[Cabeça|Resultado]) :- retirar_elemento(Elem,Cauda,Resultado).
+
+%concatenar_uma_lista_com_outra
+concatena([],L,L).
+concatena([Cab|Cauda],L2,[Cab|Resultado]) :- concatena(Cauda,L2,Resultado).
+
+%exclui_objeto
+excluiObjetivo([Elem|_],[Elem|Cauda],Cauda,Elem).
+
+
+
+#meta_para_encontrar_princesa_peach
+
+%meta
+meta(Estado,Princesa):- pertence(Princesa, Estado).
+
+%meta_dinamica
+metaDinamica([Px,Py],[Px2,Py2]) :- Px is Px2, Py is Py2.
+
+%meta_estatica
+metaEstatica([9,5]).
+
+
+
+#busca_em_profundidade
+
+%busca_profundidade_dinamica
+dinamico([Px,Py],[Lx,Ly],Escada,Carrinho,Solucao) :- buscaDinamica([],[Px,Py],[Lx,Ly],Escada,Carrinho,Solucao).
+buscaDinamica(Caminho,Estado,Ladrao,_,_,[Estado|Caminho]) :- metaDinamica(Estado, Ladrao).
+buscaDinamica(Caminho,Estado,Ladrao,Escada,Carrinho,Solucao) :- movimenta(Estado,Sucessor,Escada,Carrinho), not(pertence(Sucessor,Caminho)),buscaDinamica([Estado|Caminho],Sucessor,Ladrao,Escada,Carrinho,Solucao).
+
+%busca_profundidade_estatica
+estatico([Px,Py],Solucao) :- buscaEstatica([],[Px,Py],Solucao).
+buscaEstatica(Caminho,Estado,[Estado|Caminho]) :- metaEstatica(Estado).
+buscaEstatica(Caminho,Estado,Solucao) :- movimenta(Estado,Sucessor,[[10,4],[5,4],[8,3],[3,2],[2,3],[6,1]], [[4,1],[5,3],[6,3],[7,4],[7,5]]), not(pertence(Sucessor,Caminho)),buscaEstatica([Estado|Caminho],Sucessor,Solucao).
+
+
+
+
+
+
+
+
+
+
+
+
+
