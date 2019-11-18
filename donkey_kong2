@@ -1,0 +1,28 @@
+salvarPrincesa([Mx,My],[Px,Py],Solucao) :- verificaObjetivos([Mx,My],[[1,10],[5,9],[Px,Py]],Solucao,[]).
+
+verificaObjetivos(_,Objetivos,CaminhoCompleto,Caminho) :- Objetivos == [], CaminhoCompleto = Caminho.
+verificaObjetivos(EstadoInicial,Objetivos,CaminhoCompleto,CaminhoParcial) :- 
+buscaProfundidade([],EstadoInicial,Objetivos,CaminhoObjetivo), 
+excluiObjetivo(CaminhoObjetivo,Objetivos,NovosObjetivos,NovoEstado), 
+concatenaCaminhos(CaminhoObjetivo,CaminhoParcial,CaminhoResultante), 
+verificaObjetivos(NovoEstado,NovosObjetivos,CaminhoCompleto,CaminhoResultante).
+
+buscaProfundidade(Caminho,Estado,Objetivos,[Estado|Caminho]) :- meta(Estado,Objetivos).
+buscaProfundidade(Caminho,Estado,Objetivos,Solucao) :- movimenta(Estado,Sucessor,[[1,4],[1,9],[2,1],[2,10],[3,7],[4,4]],[[1,7],[5,3]],[[2,7],[3,3],[3,5],[4,8],[5,6]]), not(pertence(Sucessor,Caminho)), buscaProfundidade([Estado|Caminho],Sucessor,Objetivos,Solucao).
+
+meta(Elem,[Elem|_]).
+
+movimenta([Px,Py],[Sx,Sy],Escada,Parede,Barril) :- not(pertence([Px,Py],Escada)), not(pertence([Px,Py],Parede)), not(pertence([Px,Py],Barril)), Px<10, Sx is Px+1, Sy is Py.
+movimenta([Px,Py],[Sx,Sy],Escada,Parede,Barril) :- not(pertence([Px,Py],Escada)), not(pertence([Px,Py],Parede)), not(pertence([Px,Py],Barril)), Px>1, Sx is Px-1, Sy is Py.
+movimenta([Px,Py],[Sx,Sy],Escada,_,_) :- pertence([Px,Py],Escada), Py<5, Sy is Py+1, Sx is Px.
+movimenta([Px,Py],[Sx,Sy],Escada,_,_) :- pertence([Px,Py],Escada), Py>1, Sy is Py-1, Sx is Px.
+movimenta([Px,Py],[Sx,Sy],Escada,_,Barril) :- concatena(Escada,Barril,Resultado), pertence([Px,Py],Resultado), Px<10, Sx is Px+1, Sy is Py, not(pertence([Sx,Sy],Resultado)).
+movimenta([Px,Py],[Sx,Sy],Escada,_,Barril) :- concatena(Escada,Barril,Resultado), pertence([Px,Py],Resultado), Px>1, Sx is Px-1, Sy is Py, not(pertence([Sx,Sy],Resultado)).
+
+pertence(Elem,[Elem|_]).
+pertence(Elem,[_|Cauda]) :- pertence(Elem,Cauda).
+
+excluiObjetivo([Elem|_],[Elem|Cauda],Cauda,Elem).
+
+concatenaCaminhos([],L,L).
+concatenaCaminhos([Cab|Cauda],L2,[Cab|Resultado]):- concatenaCaminhos(Cauda,L2,Resultado).
